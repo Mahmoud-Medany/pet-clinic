@@ -21,12 +21,15 @@ pipeline {
             - name: docker-config
               secret:
                 secretName: dockerhub-cred
+                items:
+                  - key: .dockerconfigjson
+                    path: config.json
       '''
     }
   }
 
   triggers {
-    pollSCM('H/5 * * * *')
+    pollSCM('H/1 * * * *')  
   }
 
   environment {
@@ -77,12 +80,3 @@ pipeline {
       }
     }
 
-    stage('Deploy to Cluster') {
-      steps {
-        container('kubectl') {
-          sh "kubectl set image deployment/petclinic petclinic=${IMAGE_NAME}:${IMAGE_TAG} -n petclinic"
-        }
-      }
-    }
-  }
-}
