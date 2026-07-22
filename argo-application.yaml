@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/Mahmoud-Medany/pet-clinic.git
     targetRevision: main
-    path: .
+    path: k8s/
 
   destination:
     server: https://kubernetes.default.svc
