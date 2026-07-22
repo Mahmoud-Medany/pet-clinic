@@ -71,7 +71,7 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
           sh """
             git config user.email "mahmmoudmedany213@gmail.com"
-            git config user.name "Mahmoud-Medany"
+            git config user.name "Jenkins-User"
             git add app-k8s.yaml
             git commit -m "ci: bump image to ${IMAGE_TAG}"
             git push https://${GIT_USER}:${GIT_PASS}@github.com/Mahmoud-Medany/pet-clinic.git HEAD:main
