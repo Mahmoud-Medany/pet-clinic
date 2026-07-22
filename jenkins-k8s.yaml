@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jenkins
+  namespace: petclinic
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: jenkins
+  namespace: petclinic
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "pods/exec", "secrets", "configmaps", "persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "create", "delete", "update", "patch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jenkins
+  namespace: petclinic
+subjects:
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: petclinic
+roleRef:
+  kind: Role
+  name: jenkins
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jenkins-ci
+  namespace: petclinic
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 600
+
+  template:
+    metadata:
+      labels:
+        app: jenkins-ci
+    spec:
+      serviceAccountName: jenkins
+      restartPolicy: Never
+
+      initContainers:
+        - name: install-plugins
+          image: jenkins/jenkins:lts-jdk17
+          command:
+            - jenkins-plugin-cli
+            - -d
+            - /var/jenkins_home/plugins
+            - --plugins
+            - workflow-aggregator
+            - git
+            - github
+            - docker-workflow
+            - credentials-binding
+            - kubernetes-cli
+            - pipeline-utility-steps
+            - timestamper
+            - ansicolor
+          volumeMounts:
+            - name: jenkins-home
+              mountPath: /var/jenkins_home
+
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins:lts-jdk17
+          ports:
+            - containerPort: 8080
+            - containerPort: 50000
+          env:
+            - name: JAVA_OPTS
+              value: "-Djenkins.install.runSetupWizard=false"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+          volumeMounts:
+            - name: jenkins-home
+              mountPath: /var/jenkins_home
+
+      volumes:
+        - name: jenkins-home
+          emptyDir: {}
