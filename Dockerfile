@@ -1,19 +1,23 @@
+# syntax=docker/dockerfile:1.7
+
 # Build Stage
-FROM maven:3.9.11-eclipse-temurin-21 AS builder
+FROM maven:3.9.11-eclipse-temurin-17-alpine AS builder
 
-WORKDIR /app
+WORKDIR /workspace
 
-COPY . .
+COPY pom.xml ./
+RUN mvn -q -DskipTests dependency:go-offline
 
-RUN mvn clean package -DskipTests
+COPY src ./src
+RUN mvn -q -DskipTests clean package
 
 # Runtime Stage
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /workspace/target/*.jar /app/app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
