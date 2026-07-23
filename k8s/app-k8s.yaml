@@ -12,7 +12,7 @@ metadata:
   labels:
     app: petclinic
 spec:
-  replicas: 2
+  replicas: 1
 
   revisionHistoryLimit: 5
 
