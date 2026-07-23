@@ -36,7 +36,7 @@ spec:
       containers:
         - name: petclinic
 
-          image: medanyyy/pet-clinic:10-3443a34
+          image: medanyyy/pet-clinic:7-befd3d3
 
           # imagePullPolicy: Never
 
