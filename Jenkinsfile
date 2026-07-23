@@ -61,7 +61,7 @@ pipeline {
     stage('Update Deploy Manifest') {
       steps {
         sh """
-          sed -i "s|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" app-k8s.yaml
+          sed -i "s|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" k8s/app-k8s.yaml
         """
       }
     }
