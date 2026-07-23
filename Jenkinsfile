@@ -58,7 +58,7 @@ pipeline {
       }
     }
 
-    stage('Update Deploy Manifest') {
+    stage('Update Manifest') {
       steps {
         sh """
           sed -i "s|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" k8s/app-k8s.yaml
@@ -72,7 +72,7 @@ pipeline {
           sh """
             git config user.email "mahmmoudmedany213@gmail.com"
             git config user.name "Jenkins-User"
-            git add app-k8s.yaml
+            git add .
             git commit -m "ci: bump image to ${IMAGE_TAG}"
             git push https://${GIT_USER}:${GIT_PASS}@github.com/Mahmoud-Medany/pet-clinic.git HEAD:main
           """
