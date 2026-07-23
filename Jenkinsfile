@@ -74,7 +74,6 @@ pipeline {
             git config user.name "Jenkins-User"
             git add .
             git diff --cached --quiet || git commit -m "ci: bump image to ${IMAGE_TAG}"
-            git pull --rebase origin main
             git push https://${GIT_USER}:${GIT_PASS}@github.com/Mahmoud-Medany/pet-clinic.git HEAD:main
           """
         }
